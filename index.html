@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronômetro</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #timer {
+            font-size: 6vw;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from {
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+            }
+            to {
+                text-shadow: 0 0 25px rgba(255, 255, 255, 1);
+            }
+        }
+
+        @media (max-width: 600px) {
+            #timer {
+                font-size: 10vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="timer"></div>
+
+    <script>
+        let primeiraData = new Date("January 31, 2025 11:00:00").getTime();
+        let segundaData = new Date("June 28, 2025 00:00:00").getTime();
+        let contagemAtual = primeiraData;
+        let primeiraFase = true;
+
+        function atualizarCronometro() {
+            const agora = new Date().getTime();
+            const diferenca = contagemAtual - agora;
+
+            if (diferenca <= 0) {
+                if (primeiraFase) {
+                    contagemAtual = segundaData;
+                    primeiraFase = false;
+                    return;
+                } else {
+                    document.getElementById("timer").innerHTML = "00m 00s";
+                    clearInterval(intervalo);
+                    return;
+                }
+            }
+
+            const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((diferenca % (1000 * 60)) / 1000);
+
+            let display = "";
+
+            if (dias > 0) {
+                display = `${dias.toString().padStart(2, '0')}d ${horas.toString().padStart(2, '0')}h ${minutos.toString().padStart(2, '0')}m`;
+            } else if (horas > 0) {
+                display = `${horas.toString().padStart(2, '0')}h ${minutos.toString().padStart(2, '0')}m ${segundos.toString().padStart(2, '0')}s`;
+            } else if (minutos > 0) {
+                display = `${minutos.toString().padStart(2, '0')}m ${segundos.toString().padStart(2, '0')}s`;
+            } else {
+                display = `00m ${segundos.toString().padStart(2, '0')}s`;
+            }
+
+            document.getElementById("timer").innerText = display;
+        }
+
+        const intervalo = setInterval(atualizarCronometro, 1000);
+        atualizarCronometro();
+    </script>
+</body>
+</html>
